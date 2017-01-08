@@ -32,7 +32,7 @@ services:
   app:
     build: .
     ports:
-      - "1337:1337"
+      - "3000:3000"
       - "5858:5858"
     command: nodemon --debug=5858
     volumes:
