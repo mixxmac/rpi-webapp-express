@@ -1,0 +1,50 @@
+version: '2'
+services:
+  mongo:
+    image: mongo:3.2
+    volumes:
+      - mongo-data:/data/db
+    expose:
+      - "27017"
+  mongo-express:
+    image: mongo-express
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    ports:
+    - "8081:8081"
+  cadvisor:
+    image: google/cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+  kv:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
+    expose:
+      - "6379"
+  app:
+    build: .
+    ports:
+      - "1337:1337"
+      - "5858:5858"
+    command: nodemon --debug=5858
+    volumes:
+      - .:/code
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo/rpi
+      - REDIS_URL=redis
+volumes:
+  mongo-data:
+  redis-data:
+  
